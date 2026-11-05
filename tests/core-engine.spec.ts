@@ -231,7 +231,7 @@ describe('subscription fan-out', () => {
     h.engine.report(decision.ticketId!, { state: 'ready', summary: 'done' })
     h.setVersion('revoked')
     h.engine.receive(trigger('2', { actor: guest })); h.pump()
-    expect(h.repo.tickets.get(decision.ticketId!)).toMatchObject({ ended: expect.anything(), undelivered: [] })
+    expect(h.repo.tickets.get(decision.ticketId!)).toMatchObject({ ended: expect.anything(), inputs: [], undelivered: [] })
     h.setVersion('v1')
     h.pump()
     expect(h.repo.tickets.get(decision.ticketId!)!.ended).toBeDefined()

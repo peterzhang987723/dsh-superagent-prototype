@@ -310,6 +310,8 @@ export class Tickets extends EnginePart {
   /** An ended ticket that cannot resume takes none of the messages that waited for it (see `letGo`). */
   private refuse(ticket: Ticket): void {
     const waiting = this.triggersOf(ticket, ticket.undelivered), left = this.untaken(ticket, ticket.undelivered)
+    const refused = new Set(ticket.undelivered)
+    ticket.inputs = ticket.inputs.filter(input => !refused.has(input.id))
     ticket.undelivered = []
     this.repo.tickets.save(ticket)
     this.letGo(ticket.id, waiting, left)

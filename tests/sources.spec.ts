@@ -847,6 +847,7 @@ describe('github source', () => {
     // An allowed sender's mention is an explicit request on that poll.
     expect(h.engine.candidate(id)?.strength).toBe('explicit')
     expect(h.store.threads.get('github:12')!.meta).toMatchObject({ title: 'Login fails', label: '#12 Login fails' })
+    expect(issueTrigger(issue(15, { title: '@agent-bot fix login', body: '' }), 'agent-bot').addressed).toBe('mention')
     h.store.close()
   })
   it('takes in a comment on an earlier Issue from its notification, without the Issue body', async () => {

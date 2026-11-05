@@ -72,6 +72,8 @@ describe('gate', () => {
     // A Thread a ticket follows only for context lends no follow-up: the admission table decides, as on any Thread.
     const context = { ...thread(['ticket']), context: ['ticket'] }
     expect(policy.gate(unaddressed(quiet), context, [ticket])).toMatchObject({ admissible: false })
+    const stopped = { id: 'ticket', ended: { at: '', by: 'human', reason: 'stopped', outcome: 'stopped' } } as Ticket
+    expect(policy.gate(unaddressed({ ...quiet, actor: { source: 'feishu', id: 'ou_guest' } }), thread(['ticket']), [stopped])).toMatchObject({ admissible: false, reason: 'not_a_member' })
   })
   it('infers strength for allowed senders\' messages the Source observes, unless Eval is off', () => {
     const observed = unaddressed({ meta: { chatId: OBSERVED, direct: false, mentioned: false } })

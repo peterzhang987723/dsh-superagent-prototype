@@ -127,9 +127,11 @@ export function listedBot(settings: Settings, actor: ActorRef): z.infer<typeof A
 export const anyoneAllowed = (settings: Settings): boolean => Object.values(settings.policy.sources).some(part => part.allowed.length > 0)
 const senderName = (entry: z.infer<typeof AllowedSchema>): string => entry.name || entry.id
 
-/** Check whether a thread has tickets of its own (excluding context-only subscriptions). */
-const participating = (thread: Thread, tickets: Ticket[]): boolean =>
-  [...thread.subscriptions, ...tickets.map(ticket => ticket.id)].some(id => !thread.context?.includes(id))
+/** Check whether a thread has tickets of its own (excluding context-only subscriptions and human-stopped tickets). */
+const participating = (thread: Thread, tickets: Ticket[]): boolean => {
+  const stopped = new Set(tickets.filter(ticket => ticket.ended?.by === 'human').map(ticket => ticket.id))
+  return [...thread.subscriptions, ...tickets.map(ticket => ticket.id)].some(id => !thread.context?.includes(id) && !stopped.has(id))
+}
 const listened = (sources: SourceScope, source: string, meta: Record<string, unknown>) => sources.scope({ source, meta })
 
 function admissionCell(allowed: boolean, addressed: boolean): AdmissionCell | undefined {
